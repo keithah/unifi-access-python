@@ -11,14 +11,18 @@ import os
 
 from unifi_access import (
     AuthenticationError,
+)
+from unifi_access import ConnectionError as UniFiConnectionError
+from unifi_access import (
     RateLimitError,
     ResourceNotFoundError,
+)
+from unifi_access import TimeoutError as UniFiTimeoutError
+from unifi_access import (
     UniFiAccessClient,
     UniFiAccessError,
     ValidationError,
 )
-from unifi_access import ConnectionError as UniFiConnectionError
-from unifi_access import TimeoutError as UniFiTimeoutError
 
 # Configuration
 HOST = os.getenv("UNIFI_ACCESS_HOST", "192.168.1.100")
