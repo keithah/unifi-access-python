@@ -531,17 +531,19 @@ class UniFiAccessClient:
         response = await self._request("PUT", f"/visitors/{visitor_id}", data=data)
         return self._parse_visitor(response["data"])
 
-    async def delete_visitor(self, visitor_id: str) -> bool:
+    async def delete_visitor(self, visitor_id: str, force: bool = True) -> bool:
         """
         Delete a visitor.
 
         Args:
             visitor_id: Visitor ID to delete
+            force: If True, permanently deletes visitor. If False, only marks as cancelled.
 
         Returns:
             True if successful
         """
-        await self._request("DELETE", f"/visitors/{visitor_id}")
+        params = {"is_force": "true"} if force else {}
+        await self._request("DELETE", f"/visitors/{visitor_id}", params=params)
         return True
 
     async def add_visitor_pin(self, visitor_id: str, pin: str) -> bool:
