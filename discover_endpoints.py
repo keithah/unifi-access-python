@@ -7,8 +7,8 @@ import asyncio
 import logging
 import sys
 from datetime import datetime, timedelta
-from unifi_access import UniFiAccessClient
 
+from unifi_access import UniFiAccessClient
 
 # Add the package to path for testing
 sys.path.insert(0, "/home/keith/src/unifi-access-python")
@@ -157,5 +157,5 @@ if __name__ == "__main__":
         logger.error("Please set UNIFI_ACCESS_TOKEN environment variable")
         logger.error("export UNIFI_ACCESS_TOKEN='your-actual-token'")
         sys.exit(1)
-    
+
     asyncio.run(discover_endpoints())

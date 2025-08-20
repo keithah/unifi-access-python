@@ -48,6 +48,16 @@ pip install -e .
 
 ## 🔧 Quick Start
 
+### Environment Variables
+
+The SDK and examples support the following environment variables:
+
+```bash
+export UNIFI_ACCESS_HOST="192.168.1.100"    # Your UniFi Access controller IP/hostname
+export UNIFI_ACCESS_TOKEN="your-api-token"   # Your API token
+export UNIFI_ACCESS_PORT="12445"             # Controller port (default: 12445)
+```
+
 ### Basic Usage
 
 ```python

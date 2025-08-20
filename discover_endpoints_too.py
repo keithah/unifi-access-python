@@ -7,8 +7,8 @@ import logging
 import os
 import sys
 from datetime import datetime, timedelta
-from threefive import reader
 
+from threefive import reader
 
 # Configure logging
 logging.basicConfig(
@@ -114,5 +114,5 @@ if __name__ == "__main__":
         logger.error("Please set UNIFI_ACCESS_TOKEN environment variable")
         logger.error("export UNIFI_ACCESS_TOKEN='your-actual-token'")
         sys.exit(1)
-    
+
     discover_endpoints()

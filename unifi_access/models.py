@@ -5,14 +5,15 @@ Data models representing UniFi Access API entities including users, visitors,
 access policies, schedules, credentials, doors, and devices.
 """
 
-from typing import List, Optional, Dict, Any, Union
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Union
 
 
 class CredentialType(Enum):
     """Types of credentials supported by UniFi Access."""
+
     NFC_CARD = "nfc_card"
     PIN_CODE = "pin_code"
     TOUCH_PASS = "touch_pass"
@@ -21,6 +22,7 @@ class CredentialType(Enum):
 
 class UserRole(Enum):
     """User roles in the UniFi Access system."""
+
     ADMIN = "admin"
     USER = "user"
     VISITOR = "visitor"
@@ -28,6 +30,7 @@ class UserRole(Enum):
 
 class DeviceType(Enum):
     """Types of UniFi Access devices."""
+
     DOOR_READER = "door_reader"
     DOOR_LOCK = "door_lock"
     CONTROLLER = "controller"
@@ -38,6 +41,7 @@ class DeviceType(Enum):
 @dataclass
 class NFCCard:
     """NFC card credential."""
+
     id: str
     card_number: str
     facility_code: Optional[str] = None
@@ -49,6 +53,7 @@ class NFCCard:
 @dataclass
 class PINCode:
     """PIN code credential."""
+
     id: str
     pin: str
     is_active: bool = True
@@ -59,6 +64,7 @@ class PINCode:
 @dataclass
 class TouchPass:
     """Touch Pass credential (smartphone-based access)."""
+
     id: str
     device_id: str
     is_active: bool = True
@@ -69,6 +75,7 @@ class TouchPass:
 @dataclass
 class Schedule:
     """Access schedule definition."""
+
     id: str
     name: str
     description: Optional[str] = None
@@ -82,6 +89,7 @@ class Schedule:
 @dataclass
 class HolidayGroup:
     """Holiday group for schedule exclusions."""
+
     id: str
     name: str
     description: Optional[str] = None
@@ -94,6 +102,7 @@ class HolidayGroup:
 @dataclass
 class AccessPolicy:
     """Access policy defining permissions and schedules."""
+
     id: str
     name: str
     description: Optional[str] = None
@@ -109,6 +118,7 @@ class AccessPolicy:
 @dataclass
 class User:
     """UniFi Access user."""
+
     id: str
     first_name: str
     last_name: str
@@ -124,7 +134,7 @@ class User:
     end_date: Optional[datetime] = None
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
-    
+
     @property
     def full_name(self) -> str:
         """Get user's full name."""
@@ -134,6 +144,7 @@ class User:
 @dataclass
 class Visitor:
     """Temporary visitor with limited access."""
+
     id: str
     first_name: str
     last_name: str
@@ -149,22 +160,27 @@ class Visitor:
     is_active: bool = True
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
-    
+
     @property
     def full_name(self) -> str:
         """Get visitor's full name."""
         return f"{self.first_name} {self.last_name}"
-    
+
     @property
     def is_valid(self) -> bool:
         """Check if visitor access is currently valid."""
-        now = datetime.utcnow()
+        from datetime import timezone
+
+        now = datetime.now(timezone.utc).replace(
+            tzinfo=None
+        )  # Remove timezone for comparison
         return self.is_active and self.start_date <= now <= self.end_date
 
 
 @dataclass
 class Door:
     """Physical door controlled by UniFi Access."""
+
     id: str
     name: str
     device_id: str
@@ -182,6 +198,7 @@ class Door:
 @dataclass
 class DoorGroup:
     """Group of doors for easier management."""
+
     id: str
     name: str
     description: Optional[str] = None
@@ -194,6 +211,7 @@ class DoorGroup:
 @dataclass
 class Device:
     """UniFi Access device (reader, lock, controller)."""
+
     id: str
     name: str
     type: DeviceType
@@ -212,6 +230,7 @@ class Device:
 @dataclass
 class AccessEvent:
     """Access event log entry."""
+
     id: str
     timestamp: datetime
     event_type: str
@@ -229,6 +248,7 @@ class AccessEvent:
 @dataclass
 class SystemLog:
     """System log entry."""
+
     id: str
     timestamp: datetime
     level: str  # "info", "warning", "error"
