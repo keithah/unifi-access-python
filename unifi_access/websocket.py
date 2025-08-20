@@ -13,7 +13,7 @@ from typing import Any, Awaitable, Callable, Dict, Optional
 
 import aiohttp
 
-from .exceptions import AuthenticationError, ConnectionError, UniFiAccessError
+from .exceptions import ConnectionError
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +82,7 @@ class UniFiAccessWebSocket:
             self.ssl_context.check_hostname = False
             self.ssl_context.verify_mode = ssl.CERT_NONE
 
-    async def connect(self):
+    async def connect(self) -> None:
         """Establish WebSocket connection."""
         if self._running:
             logger.warning("WebSocket is already running")
@@ -113,7 +113,7 @@ class UniFiAccessWebSocket:
             await self._handle_error(e)
             raise ConnectionError(f"WebSocket connection failed: {e}")
 
-    async def disconnect(self):
+    async def disconnect(self) -> None:
         """Close WebSocket connection."""
         self._running = False
 
@@ -128,8 +128,12 @@ class UniFiAccessWebSocket:
         if self.on_disconnect:
             await self.on_disconnect()
 
-    async def _message_handler(self):
+    async def _message_handler(self) -> None:
         """Handle incoming WebSocket messages."""
+        if self.websocket is None:
+            logger.error("WebSocket is None in message handler")
+            return
+
         try:
             async for msg in self.websocket:
                 if msg.type == aiohttp.WSMsgType.TEXT:
@@ -140,8 +144,11 @@ class UniFiAccessWebSocket:
                         logger.error(f"Failed to parse WebSocket message: {e}")
 
                 elif msg.type == aiohttp.WSMsgType.ERROR:
-                    logger.error(f"WebSocket error: {self.websocket.exception()}")
-                    await self._handle_error(self.websocket.exception())
+                    if self.websocket is not None:
+                        logger.error(f"WebSocket error: {self.websocket.exception()}")
+                        exc = self.websocket.exception()
+                        if exc is not None and isinstance(exc, Exception):
+                            await self._handle_error(exc)
 
                 elif msg.type == aiohttp.WSMsgType.CLOSE:
                     logger.info("WebSocket connection closed by server")
@@ -155,7 +162,7 @@ class UniFiAccessWebSocket:
         if self._running:
             await self._attempt_reconnect()
 
-    async def _handle_message(self, data: Dict[str, Any]):
+    async def _handle_message(self, data: Dict[str, Any]) -> None:
         """Handle parsed WebSocket message."""
         message_type = data.get("type")
         payload = data.get("data", {})
@@ -180,7 +187,7 @@ class UniFiAccessWebSocket:
             logger.error(f"Error handling message type {message_type}: {e}")
             await self._handle_error(e)
 
-    async def _attempt_reconnect(self):
+    async def _attempt_reconnect(self) -> None:
         """Attempt to reconnect WebSocket."""
         if self._reconnect_attempts >= self.max_reconnect_attempts:
             logger.error(
@@ -225,7 +232,7 @@ class UniFiAccessWebSocket:
             await self._handle_error(e)
             await self._attempt_reconnect()
 
-    async def _handle_error(self, error: Exception):
+    async def _handle_error(self, error: Exception) -> None:
         """Handle WebSocket errors."""
         if self.on_error:
             try:
@@ -235,37 +242,39 @@ class UniFiAccessWebSocket:
 
     def set_access_event_handler(
         self, handler: Callable[[Dict[str, Any]], Awaitable[None]]
-    ):
+    ) -> None:
         """Set handler for access events (door access attempts)."""
         self.on_access_event = handler
 
     def set_door_status_handler(
         self, handler: Callable[[Dict[str, Any]], Awaitable[None]]
-    ):
+    ) -> None:
         """Set handler for door status changes (locked/unlocked)."""
         self.on_door_status = handler
 
     def set_device_status_handler(
         self, handler: Callable[[Dict[str, Any]], Awaitable[None]]
-    ):
+    ) -> None:
         """Set handler for device status changes (online/offline)."""
         self.on_device_status = handler
 
     def set_system_alert_handler(
         self, handler: Callable[[Dict[str, Any]], Awaitable[None]]
-    ):
+    ) -> None:
         """Set handler for system alerts and notifications."""
         self.on_system_alert = handler
 
-    def set_connect_handler(self, handler: Callable[[], Awaitable[None]]):
+    def set_connect_handler(self, handler: Callable[[], Awaitable[None]]) -> None:
         """Set handler for connection events."""
         self.on_connect = handler
 
-    def set_disconnect_handler(self, handler: Callable[[], Awaitable[None]]):
+    def set_disconnect_handler(self, handler: Callable[[], Awaitable[None]]) -> None:
         """Set handler for disconnection events."""
         self.on_disconnect = handler
 
-    def set_error_handler(self, handler: Callable[[Exception], Awaitable[None]]):
+    def set_error_handler(
+        self, handler: Callable[[Exception], Awaitable[None]]
+    ) -> None:
         """Set handler for error events."""
         self.on_error = handler
 

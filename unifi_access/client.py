@@ -9,8 +9,8 @@ import asyncio
 import json
 import logging
 import ssl
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Union
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 import aiohttp
 import urllib3
@@ -22,8 +22,6 @@ from .exceptions import (
     PermissionError,
     RateLimitError,
     ResourceNotFoundError,
-    TimeoutError,
-    UniFiAccessError,
     ValidationError,
 )
 from .models import (
@@ -100,16 +98,16 @@ class UniFiAccessClient:
             self.ssl_context.check_hostname = False
             self.ssl_context.verify_mode = ssl.CERT_NONE
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "UniFiAccessClient":
         """Async context manager entry."""
         await self.connect()
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """Async context manager exit."""
         await self.disconnect()
 
-    async def connect(self):
+    async def connect(self) -> None:
         """Establish connection and set up authentication."""
         connector = aiohttp.TCPConnector(ssl=self.ssl_context)
         timeout = aiohttp.ClientTimeout(total=self.timeout)
@@ -123,13 +121,13 @@ class UniFiAccessClient:
             },
         )
 
-    async def disconnect(self):
+    async def disconnect(self) -> None:
         """Close the connection."""
         if self.session:
             await self.session.close()
             self.session = None
 
-    async def _ensure_authenticated(self):
+    async def _ensure_authenticated(self) -> None:
         """Ensure we have a valid authentication token."""
         if not self.token:
             raise AuthenticationError("API token not provided")
@@ -162,6 +160,9 @@ class UniFiAccessClient:
 
         for attempt in range(self.max_retries + 1):
             try:
+                if self.session is None:
+                    raise ConnectionError("Session is None - call connect() first")
+
                 async with self.session.request(
                     method=method, url=url, json=data, params=params
                 ) as response:
@@ -294,7 +295,7 @@ class UniFiAccessClient:
         Returns:
             Created User object
         """
-        data = {
+        data: Dict[str, Any] = {
             "first_name": first_name,
             "last_name": last_name,
             "role": role.value,
@@ -499,7 +500,7 @@ class UniFiAccessClient:
         Returns:
             Updated Visitor object
         """
-        data = {}
+        data: Dict[str, Any] = {}
 
         if first_name is not None:
             data["first_name"] = first_name
@@ -812,7 +813,8 @@ class UniFiAccessClient:
             id=data["id"],
             name=data["name"],
             description=data.get("full_name"),  # Use full_name as description
-            device_id=data.get("floor_id"),  # floor_id is closest to device_id concept
+            device_id=data.get("floor_id")
+            or "",  # floor_id is closest to device_id concept
             is_locked=data.get("door_lock_relay_status") == "lock",
             is_online=data.get("is_bind_hub", True),  # If bound to hub, consider online
             battery_level=None,  # Not provided in API

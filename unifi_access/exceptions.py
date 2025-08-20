@@ -5,12 +5,17 @@ Custom exception classes for handling various error conditions when interacting
 with the UniFi Access API.
 """
 
+from typing import Any, Dict, Optional
+
 
 class UniFiAccessError(Exception):
     """Base exception for all UniFi Access API errors."""
 
     def __init__(
-        self, message: str, status_code: int = None, response_data: dict = None
+        self,
+        message: str,
+        status_code: Optional[int] = None,
+        response_data: Optional[Dict[str, Any]] = None,
     ):
         super().__init__(message)
         self.message = message

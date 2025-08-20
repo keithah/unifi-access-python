@@ -10,13 +10,10 @@ import asyncio
 import os
 
 from unifi_access import (
-    APIError,
     AuthenticationError,
 )
 from unifi_access import ConnectionError as UniFiConnectionError
 from unifi_access import (
-    PermissionError,
-    RateLimitError,
     ResourceNotFoundError,
 )
 from unifi_access import TimeoutError as UniFiTimeoutError
@@ -47,7 +44,7 @@ async def test_authentication_error():
             timeout=5,
         ) as client:
 
-            visitors = await client.get_visitors()
+            _ = await client.get_visitors()
 
     except AuthenticationError as e:
         print(f"✅ Caught expected AuthenticationError: {e}")
@@ -75,7 +72,7 @@ async def test_connection_error():
             timeout=2,  # Short timeout
         ) as client:
 
-            visitors = await client.get_visitors()
+            _ = await client.get_visitors()
 
     except (UniFiConnectionError, OSError, asyncio.TimeoutError) as e:
         print(f"✅ Caught expected connection error: {type(e).__name__}: {e}")
@@ -99,7 +96,7 @@ async def test_resource_not_found():
         ) as client:
 
             # Try to get a visitor with invalid ID
-            visitor = await client.get_visitor("invalid-visitor-id-12345")
+            _ = await client.get_visitor("invalid-visitor-id-12345")
 
     except ResourceNotFoundError as e:
         print(f"✅ Caught expected ResourceNotFoundError: {e}")
@@ -123,7 +120,7 @@ async def test_validation_error():
         ) as client:
 
             # Try to create visitor with invalid data
-            visitor = await client.create_visitor(
+            _ = await client.create_visitor(
                 first_name="",  # Empty name should cause validation error
                 last_name="",
                 start_date=None,  # Invalid date
@@ -161,13 +158,13 @@ async def test_api_limitations():
 
             # Test WebSocket (not available in developer API)
             try:
-                ws_client = client.create_websocket_client()
+                _ = client.create_websocket_client()
             except ResourceNotFoundError as e:
                 print(f"✅ WebSocket limitation handled: {e}")
 
             # Test schedules (not available in developer API)
             try:
-                schedules = await client.get_schedules()
+                _ = await client.get_schedules()
             except ResourceNotFoundError as e:
                 print(f"✅ Schedules limitation handled: {e}")
 
