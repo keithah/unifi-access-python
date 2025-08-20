@@ -4,6 +4,7 @@ Alternate Endpoint Discovery as proof of Concept
 
 """
 import logging
+import os
 import sys
 from datetime import datetime, timedelta
 from threefive import reader
@@ -15,10 +16,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Test configuration
-HOST = "https://iodisco.com"
-TOKEN = "DPHlUYlFNgVzeZ5gvE34yQ"
-PORT = 443
+# Test configuration from environment variables
+HOST = os.getenv("UNIFI_ACCESS_HOST", "https://localhost")
+TOKEN = os.getenv("UNIFI_ACCESS_TOKEN", "")
+PORT = int(os.getenv("UNIFI_ACCESS_PORT", "443"))
 
 PREFIXES = [
     "/",
@@ -109,4 +110,9 @@ def discover_endpoints():
 
 
 if __name__ == "__main__":
+    if not TOKEN:
+        logger.error("Please set UNIFI_ACCESS_TOKEN environment variable")
+        logger.error("export UNIFI_ACCESS_TOKEN='your-actual-token'")
+        sys.exit(1)
+    
     discover_endpoints()

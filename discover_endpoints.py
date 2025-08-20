@@ -21,9 +21,11 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Test configuration
-HOST = "iodisco.com"
-TOKEN = "DPHlUYlFNgVzeZ5gvE34yQ"
-PORT = 12445
+import os
+
+HOST = os.getenv("UNIFI_ACCESS_HOST", "localhost")
+TOKEN = os.getenv("UNIFI_ACCESS_TOKEN", "")
+PORT = int(os.getenv("UNIFI_ACCESS_PORT", "12445"))
 
 PREFIXES = [
     "/",
@@ -86,7 +88,7 @@ class TokenAuthClient(UniFiAccessClient):
 
     async def authenticate(self):
         """Override to use token instead of username/password"""
-        self.token = TOKEN
+        self.token = self.token or TOKEN
         self.token_expires = datetime.utcnow() + timedelta(hours=24)
 
         # Update session headers with bearer token
@@ -151,4 +153,9 @@ async def discover_endpoints():
 
 
 if __name__ == "__main__":
+    if not TOKEN:
+        logger.error("Please set UNIFI_ACCESS_TOKEN environment variable")
+        logger.error("export UNIFI_ACCESS_TOKEN='your-actual-token'")
+        sys.exit(1)
+    
     asyncio.run(discover_endpoints())
