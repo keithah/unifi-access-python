@@ -13,6 +13,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import aiohttp
+
 try:
     import urllib3
 except ImportError:
