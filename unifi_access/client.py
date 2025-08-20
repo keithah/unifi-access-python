@@ -13,7 +13,10 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import aiohttp
-import urllib3
+try:
+    import urllib3
+except ImportError:
+    urllib3 = None
 
 from .exceptions import (
     APIError,
@@ -45,7 +48,8 @@ from .models import (
 from .websocket import UniFiAccessWebSocket
 
 # Disable SSL warnings for self-signed certificates
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+if urllib3 is not None:
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 logger = logging.getLogger(__name__)
 
