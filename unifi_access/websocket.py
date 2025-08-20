@@ -60,18 +60,18 @@ class UniFiAccessWebSocket:
         self._reconnect_attempts = 0
 
         # Event handlers
-        self.on_access_event: Optional[Callable[[Dict[str, Any]], Awaitable[None]]] = (
-            None
-        )
-        self.on_door_status: Optional[Callable[[Dict[str, Any]], Awaitable[None]]] = (
-            None
-        )
-        self.on_device_status: Optional[Callable[[Dict[str, Any]], Awaitable[None]]] = (
-            None
-        )
-        self.on_system_alert: Optional[Callable[[Dict[str, Any]], Awaitable[None]]] = (
-            None
-        )
+        self.on_access_event: Optional[
+            Callable[[Dict[str, Any]], Awaitable[None]]
+        ] = None
+        self.on_door_status: Optional[
+            Callable[[Dict[str, Any]], Awaitable[None]]
+        ] = None
+        self.on_device_status: Optional[
+            Callable[[Dict[str, Any]], Awaitable[None]]
+        ] = None
+        self.on_system_alert: Optional[
+            Callable[[Dict[str, Any]], Awaitable[None]]
+        ] = None
         self.on_connect: Optional[Callable[[], Awaitable[None]]] = None
         self.on_disconnect: Optional[Callable[[], Awaitable[None]]] = None
         self.on_error: Optional[Callable[[Exception], Awaitable[None]]] = None

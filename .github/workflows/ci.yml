@@ -36,12 +36,12 @@ jobs:
         
     - name: Check code formatting with black
       run: |
-        pip install black
+        pip install black==23.3.0
         black --check .
         
     - name: Sort imports with isort
       run: |
-        pip install isort
+        pip install isort==5.12.0
         isort --check-only .
         
     - name: Type check with mypy

@@ -9,20 +9,11 @@ that can occur when working with the UniFi Access API.
 import asyncio
 import os
 
-from unifi_access import (
-    AuthenticationError,
-)
+from unifi_access import AuthenticationError
 from unifi_access import ConnectionError as UniFiConnectionError
-from unifi_access import (
-    RateLimitError,
-    ResourceNotFoundError,
-)
+from unifi_access import RateLimitError, ResourceNotFoundError
 from unifi_access import TimeoutError as UniFiTimeoutError
-from unifi_access import (
-    UniFiAccessClient,
-    UniFiAccessError,
-    ValidationError,
-)
+from unifi_access import UniFiAccessClient, UniFiAccessError, ValidationError
 
 # Configuration
 HOST = os.getenv("UNIFI_ACCESS_HOST", "192.168.1.100")
@@ -44,7 +35,6 @@ async def test_authentication_error():
             verify_ssl=False,
             timeout=5,
         ) as client:
-
             _ = await client.get_visitors()
 
     except AuthenticationError as e:
@@ -72,7 +62,6 @@ async def test_connection_error():
             verify_ssl=False,
             timeout=2,  # Short timeout
         ) as client:
-
             _ = await client.get_visitors()
 
     except (UniFiConnectionError, OSError, asyncio.TimeoutError) as e:
@@ -95,7 +84,6 @@ async def test_resource_not_found():
         async with UniFiAccessClient(
             host=HOST, token=TOKEN, port=PORT, verify_ssl=False
         ) as client:
-
             # Try to get a visitor with invalid ID
             _ = await client.get_visitor("invalid-visitor-id-12345")
 
@@ -119,7 +107,6 @@ async def test_validation_error():
         async with UniFiAccessClient(
             host=HOST, token=TOKEN, port=PORT, verify_ssl=False
         ) as client:
-
             # Try to create visitor with invalid data
             _ = await client.create_visitor(
                 first_name="",  # Empty name should cause validation error
@@ -148,7 +135,6 @@ async def test_api_limitations():
         async with UniFiAccessClient(
             host=HOST, token=TOKEN, port=PORT, verify_ssl=False
         ) as client:
-
             # Test door unlock (not available in developer API)
             try:
                 doors = await client.get_doors()
@@ -189,7 +175,6 @@ async def robust_operation_example():
             async with UniFiAccessClient(
                 host=HOST, token=TOKEN, port=PORT, verify_ssl=False, timeout=10
             ) as client:
-
                 # Perform multiple operations with error handling
                 print(f"   Attempt {attempt + 1}/{max_retries}")
 

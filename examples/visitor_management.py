@@ -158,7 +158,6 @@ async def main():
     async with UniFiAccessClient(
         host=HOST, token=TOKEN, port=PORT, verify_ssl=False
     ) as client:
-
         print("🔌 Connected to UniFi Access controller")
         print()
 

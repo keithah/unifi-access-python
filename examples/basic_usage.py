@@ -27,7 +27,6 @@ async def main():
         port=PORT,
         verify_ssl=False,  # For self-signed certificates
     ) as client:
-
         print("🔌 Connected to UniFi Access controller")
         print(f"   Host: {HOST}:{PORT}")
         print()
